@@ -1,0 +1,27 @@
+@import "../../styles/utils";
+
+.logo {
+  text-decoration: none;
+  display: block;
+
+  border-radius: 35px;
+  position: relative;
+  width: 100px;
+  height: 60px;
+
+  @include onDekstop {
+    width: 160px;
+    height: $header-height;
+  }
+  
+
+  background-image: url(../../images/logo.png);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  text-decoration: none;
+
+  &__link {
+    text-decoration: none;
+  }
+}

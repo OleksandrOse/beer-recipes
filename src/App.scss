@@ -1,0 +1,33 @@
+@import "./styles/utils";
+
+html {
+  font-family: "Poppins", sans-serif;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 27px;
+  color: #3e3e3e;
+  scroll-behavior: smooth;
+  width: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+.app {
+  &__main {
+    padding: 60px 0 0;
+    width: 100%;
+    height: calc(100vh - $header-height);
+    overflow: auto;
+  }
+
+  &__container {
+    @include container;
+  }
+  &__title {
+    text-align: center;
+    color: $color-blue;
+  }
+}

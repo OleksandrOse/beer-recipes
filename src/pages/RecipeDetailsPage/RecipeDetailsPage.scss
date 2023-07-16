@@ -1,0 +1,69 @@
+@import "../../styles/utils";
+
+.recipe-details {
+  font-size: 16px;
+  &__container {
+    @include container;
+    
+  }
+
+  &__name {
+    color: $color-blue;
+  }
+
+  &__content {
+    border-bottom: 2px solid $color-blue;
+  }
+
+  &__photo-container {
+    position: relative;
+
+    box-sizing: border-box;
+    width: 100%;
+    max-height: 264px;
+    overflow: hidden;
+    margin-bottom: 32px;
+
+    &::after {
+      content: "";
+      display: block;
+      padding-bottom: 100%;
+    }
+
+    @include onTablet {
+      max-height: 300px;
+    }
+  
+    @include onDekstop {
+      height: 260px;
+      margin-bottom: 0;
+    }
+  }
+
+  &__photo {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  
+    object-fit: contain;
+    object-position: center;
+  }
+
+  &__link {
+    text-decoration: none;
+    color: $color-black;
+    font-size: 24px;
+    line-height: 34px;
+  }
+
+  &__preparation {
+    @include container;
+    
+  }
+
+  &__preparation-title {
+    justify-content: center;
+    text-align: center;
+    color: $color-energy;
+  }
+}
