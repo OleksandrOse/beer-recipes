@@ -2,10 +2,9 @@ import { FC, useRef } from 'react';
 
 import { RecipeList } from '../../components/RecipesList/RecipeList';
 import { useStore } from '../../utils/useStore';
-import { getRecipes } from '../../api/recipes';
 
 export const HomePage: FC = () => {
-  const { recipes, setRecipes, page, setPage, setStartPage } = useStore();
+  const { page, recipes, loadMoreRecipes } = useStore();
 
   const listContainerRef = useRef<HTMLDivElement>(null);
 
@@ -13,16 +12,9 @@ export const HomePage: FC = () => {
     const container = listContainerRef.current;
     if (container) {
       const { scrollTop, clientHeight, scrollHeight } = container;
+
       if (scrollTop + clientHeight >= scrollHeight) {
-        setPage();
-        const visibleRecipe = recipes.slice(5);
-        const recipesFromServer = await getRecipes(page);
-
-        if (!recipesFromServer.length) {
-          setStartPage();
-        }
-
-        setRecipes([...visibleRecipe, ...recipesFromServer])
+       loadMoreRecipes(page, recipes);
       }
     }
   };

@@ -2,4 +2,8 @@
 
 .recipes {
   list-style: none;
+
+  &:last-child {
+    margin-bottom: 100px;
+  }
 }

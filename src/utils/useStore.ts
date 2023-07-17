@@ -1,51 +1,72 @@
 import { create } from "zustand";
+import { getRecipes } from "../api/recipes";
 import { Recipe } from "../types/Recipe";
 
 interface RecipeState {
   recipes: Recipe[];
-  setRecipes: (value: Recipe[]) => void;
-  addRecipe: (recipe: Recipe) => void;
-  removeRecipes: (id: number) => void;
-  removeAllRecipes: (arr: number[]) => void;
   recipe: Recipe | null;
-  setRecipe: (recipe: Recipe) => void;
+  page: number;
   selectedRecipesId: number[];
+  setRecipes: (value: Recipe[]) => void;
+  loadRecipes: () => void;
+  loadMoreRecipes: (page: number, recipes: Recipe[]) => void;
+  removeAllRecipes: (recipes: Recipe[], arr: number[], page: number) => void;
+  setRecipe: (recipe: Recipe) => void;
   setSelectedRecipesId: (id: number) => void;
   removeRecipesId: (id: number) => void;
-  removeSelectedRecipesId: () => void;
-  page: number;
   setPage: () => void;
-  setStartPage: () => void;
 }
 
 export const useStore = create<RecipeState>((set) => ({
   recipes: [],
+  recipe: null,
+  page: 4,
+  selectedRecipesId: [],
   setRecipes: (value: Recipe[]) => {
     set((state) => ({ ...state, recipes: value }));
   },
-  addRecipe: (recipe: Recipe) => {
-    set((state) => ({
-      ...state,
-      recipes: [...state.recipes, recipe],
-    }));
+  loadRecipes: async () => {
+    const recipeFromServer = await getRecipes(1, 15)
+
+    set((state) => ({ ...state, recipes: recipeFromServer }));
   },
-  removeRecipes: (id: number) => {
-    set((state) => ({
-      ...state,
-      recipes: state.recipes.filter((recipe) => recipe.id !== id),
-    }));
+  loadMoreRecipes: async (page: number, recipes: Recipe[]) => {
+    set((state) => ({ page: state.page + 1 }));
+
+    const recipeFromServer = await getRecipes(page, 5);
+
+    const partRecipes = recipes.slice(5);
+
+    set((state) => ({ ...state, recipes: [...partRecipes, ...recipeFromServer] }));
   },
-  removeAllRecipes: (arr: number[]) => {
+  removeAllRecipes: async (recipes: Recipe[], arr: number[], page: number) => {
+    set((state) => ({ ...state, page: state.page + 1 }));
+
     set((state) => ({
       ...state,
       recipes: state.recipes.filter((recipe) => !arr.includes(recipe.id)),
     }));
+
+    let recipeFromServer = await getRecipes(page, arr.length);
+    
+    let isRecipes = () => recipes.some((recipe) => recipeFromServer.some((beer) => recipe.id === beer.id));
+
+    while (isRecipes()) {
+      recipeFromServer = await getRecipes(page, arr.length);
+
+      page++;
+    }
+
+    set((state) => ({ ...state, recipes: [...state.recipes, ...recipeFromServer] }));
+
+    set((state) => ({
+      ...state,
+      selectedRecipesId: [],
+    }));
   },
-  recipe: null,
   setRecipe: (value: Recipe) => {
     set((state) => ({ ...state, recipe: value }));
   },
-  selectedRecipesId: [],
   setSelectedRecipesId: (id: number) => {
     set((state) => ({
       ...state,
@@ -58,13 +79,5 @@ export const useStore = create<RecipeState>((set) => ({
       selectedRecipesId: state.selectedRecipesId.filter((val) => val !== id),
     }));
   },
-  removeSelectedRecipesId: () => {
-    set((state) => ({
-      ...state,
-      selectedRecipesId: [],
-    }));
-  },
-  page: 4,
   setPage: () => set((state) => ({ page: state.page + 1 })),
-  setStartPage: () => set((state) => ({ page: 1 })),
 }));
