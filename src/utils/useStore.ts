@@ -51,13 +51,21 @@ export const useStore = create<RecipeState>((set) => ({
     
     let isRecipes = () => recipes.some((recipe) => recipeFromServer.some((beer) => recipe.id === beer.id));
 
-    while (isRecipes()) {
+    const newRecipes = [...recipes, ...recipeFromServer].slice(0, 15);
+
+    while (isRecipes() && newRecipes.length < 15) {
       recipeFromServer = await getRecipes(page, arr.length);
+
+      if(!recipeFromServer) {
+        page = 1;
+      }
 
       page++;
     }
 
-    set((state) => ({ ...state, recipes: [...state.recipes, ...recipeFromServer] }));
+    
+
+    set((state) => ({ ...state, recipes: newRecipes }));
 
     set((state) => ({
       ...state,
